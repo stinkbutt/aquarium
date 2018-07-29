@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Aquarium</title>
+	<link rel="stylesheet" href="http://10.0.1.126/css/style.css" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="aquarium.js"></script>
+<script>
+
+$( document ).ready(function() {
+    globalTemp = -1.0
+
+    draw_table(0)
+
+	// old code begins here
+    var interval = 2000;   //number of mili seconds between each call
+    var data = ""
+    var arr = ""
+
+    var refresh = function() {
+        $.ajax({
+            url: "temp.txt",
+            cache: false,
+            success: function(html) {
+                $('#hidden').html(html);
+                data = $("#hidden").text();
+                arr = html.split(",");
+                globalTemp = parseFloat(arr[0]);
+                $("#temp").html(arr[0] + "&deg; F");
+                $("#average").html("Average: " + arr[1] + "&deg; F");
+                $("#highlow").html("H: " + arr[2] + " L: " + arr[3]);
+                $("#timestamp").html(arr[4]);
+                if (arr[0] > 81.0){
+		    	         $("#thermometer").attr("src", "http://10.0.1.126/images/thermometer_high.png");
+					        }
+
+    				    if (arr[0] < 79.0){
+    				    	$("#thermometer").attr("src", "http://10.0.1.126/images/thermometer_low.png")
+                  }
+
+
+        setTimeout(function() {
+                    refresh();
+                }, interval);
+            }
+        });
+    };
+    refresh();
+    
+
+    $("#hidden").hide();
+    $('#temp').prepend('<img id="thermometer_ok.png" src="http://10.0.1.126/images/thermometer_ok.png" />');
+
+    $("#temp").css({
+        color: "orange",
+        fontSize: "48px"
+    });
+    $()
+});
+
+function draw_table(temp) {
+    google.charts.load('current', {'packages':['gauge']});
+    google.charts.setOnLoadCallback(drawChart);
+    
+    function drawChart() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['Label', 'Value'],
+        ['Temp', temp],
+//          ['pH', 55],
+//          ['Alkalinity', 68]
+      ]);
+
+      var options = {
+        width: 400, height: 120,
+        greenFrom: 72, greenTo: 78,
+        redFrom: 82, redTo: 92,
+        yellowFrom:78, yellowTo: 82,
+        minorTicks: 5
+      };
+
+      var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+      setInterval(function() {
+        data.setValue(0, 1, globalTemp);
+        chart.draw(data, options);
+      }, 13000);
+ 
+ /*       setInterval(function() {
+          data.setValue(1, 1, 40 + Math.round(60 * Math.random()));
+          chart.draw(data, options);
+        }, 5000);
+        setInterval(function() {
+          data.setValue(2, 1, 60 + Math.round(20 * Math.random()));
+          chart.draw(data, options);
+        }, 26000);
+  */
+      
+  }
+}
+
+</script>
+
+</head>
+<body>
+	<div id="hidden"></div>
+	<div id="header">
+		<div>
+			<div class="logo">
+				<a href="index.html">Aquarium</a>
+			</div>
+			<ul id="navigation">
+				<li class="active">
+					<a href="index.html">Home</a>
+				</li>
+				<li>
+					<a href="features.html">Live View</a>
+				</li>
+				<li>
+					<a href="stats.php">Stats</a>
+				</li>
+				<li>
+					<a href="about.html">About</a>
+				</li>
+				<li>
+					<a href="contact.html">Contact</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="adbox">
+		<div class="clearfix">
+			<img src="http://10.0.1.126/images/tank.png" alt="Img" height="240" width="202">
+			<div>
+				<h1>Temperature</h1>
+				<h2 id="temp"></h2>
+				<img id="thermometer" src="http://10.0.1.126/images/thermometer_ok.png" height="51" width="51"/>
+				<h3 id="average"></h3><h3 id="highlow"></h3><h3 id="timestamp"></h3>
+			</div>
+      <div id="chart_div" style="width: 400px; height: 120px;"></div>
+		</div>
+	</div>
+
+	<div id="footer">
+		<div class="clearfix">
+			<div id="connect">
+				<a href="https://www.facebook.com/alex.gagescu" target="_blank" class="facebook"></a><a href="https://plus.google.com/114809599135394503190/posts" target="_blank" class="googleplus"></a><a href="https://twitter.com/01100001_011001" target="_blank" class="twitter"></a>
+			</div>
+			<p>
+				© 2016 Alex Gagescu. All Rights Reserved.
+			</p>
+		</div>
+	</div>
+</body>

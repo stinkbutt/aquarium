@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0018)http://10.0.1.126/ -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="aquarium.js"></script>
+	<script>
+
+$( document ).ready(function() {
+    //$("#hidden").hide();
+    var interval = 2000;   //number of mili seconds between each call
+    var data = ""
+    var arr = ""
+
+    var refresh = function() {
+        $.ajax({
+            url: "temp.txt",
+            cache: false,
+            success: function(html) {
+                $('#hidden').html(html);
+                data = $("#hidden").text();
+                arr = html.split(",");
+                $("#temp").html(arr[0]);
+                $("#average").html(arr[1]);
+                $("#high").html(arr[2]);
+                $("#low").html(arr[3]);
+                $("#timestamp").html(arr[4]);
+                // console.log(arr);
+
+		setTimeout(function() {
+                    refresh();
+                }, interval);
+            }
+        });
+    };
+    refresh();
+
+    $("#hidden").css({
+        color: "orange",
+        fontSize: "48px"
+    }).hide();
+});
+
+	</script>
+</head>
+<body>
+<div id="hidden"></div>
+<div id="temp"></div>
+<div id="average"></div>
+<div id="high"></div>
+<div id="low"></div>
+<div id="timestamp"></div>
+</body>
+</html>
